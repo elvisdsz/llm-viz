@@ -48,7 +48,8 @@ const tokenDisplay = new TokenDisplay(tokenStream, (tokenIndex) => {
 const attentionViz  = new AttentionViz(attnCanvas, attnLayerSelect, attnHeadSelect, attnTooltip);
 const activationViz = new ActivationViz(actCanvas, actLayerSelect);
 
-let dropdownsReady = false;
+let attnDropdownReady = false;
+let actDropdownReady  = false;
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
 function setStatus(msg, cls = "") {
@@ -75,10 +76,9 @@ wsClient.on("token", (data) => {
 });
 
 wsClient.on("attention", (data) => {
-  // Initialise dropdowns on first attention message
-  if (!dropdownsReady) {
+  if (!attnDropdownReady) {
     attentionViz.initDropdowns(data.weights.length, data.weights[0]?.length ?? 12);
-    dropdownsReady = true;
+    attnDropdownReady = true;
   }
 
   if (!stepHistory.has(data.token_index)) stepHistory.set(data.token_index, {});
@@ -88,8 +88,9 @@ wsClient.on("attention", (data) => {
 });
 
 wsClient.on("activations", (data) => {
-  if (!dropdownsReady) {
+  if (!actDropdownReady) {
     activationViz.initDropdown(data.layer_count);
+    actDropdownReady = true;
   }
 
   if (!stepHistory.has(data.token_index)) stepHistory.set(data.token_index, {});
@@ -130,7 +131,8 @@ generateBtn.addEventListener("click", () => {
   attentionViz.reset();
   activationViz.reset();
   stepHistory.clear();
-  dropdownsReady = false;
+  attnDropdownReady = false;
+  actDropdownReady  = false;
 
   setStatus("Connecting…", "running");
   setRunning(true);
