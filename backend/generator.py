@@ -12,6 +12,7 @@ which are far easier to visualise than the partial KV-cache versions.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import threading
 
 import torch
 
@@ -40,14 +41,16 @@ def generate_tokens(
     prompt: str,
     max_new_tokens: int = 50,
     temperature: float = 1.0,
+    cancel_event: threading.Event | None = None,
 ):
     """
-    Async generator yielding GenerationStep for each produced token.
+    Generator yielding GenerationStep for each produced token.
 
     Args:
         prompt:         text prompt to condition on
         max_new_tokens: maximum tokens to generate
-        temperature:    sampling temperature (>1 = more random, <1 = sharper)
+        temperature:    sampling temperature (0 = greedy, >1 = more random, <1 = sharper)
+        cancel_event:   optional threading.Event; generation stops early when set
 
     Yields:
         GenerationStep
@@ -62,6 +65,9 @@ def generate_tokens(
 
     with torch.no_grad():
         for token_index in range(max_new_tokens):
+            if cancel_event is not None and cancel_event.is_set():
+                break
+
             outputs = model(
                 generated_ids,
                 use_cache=False,

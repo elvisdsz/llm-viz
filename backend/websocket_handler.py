@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import WebSocket, WebSocketDisconnect
@@ -49,6 +50,7 @@ async def handle_generation(websocket: WebSocket) -> None:
 
     loop = asyncio.get_running_loop()
     total = 0
+    cancel_event = threading.Event()
 
     try:
         # Run generator in a thread so the event loop stays responsive.
@@ -61,6 +63,7 @@ async def handle_generation(websocket: WebSocket) -> None:
                     request.prompt,
                     request.max_new_tokens,
                     request.temperature,
+                    cancel_event,
                 ):
                     loop.call_soon_threadsafe(queue.put_nowait, step)
             except Exception as exc:  # noqa: BLE001
@@ -127,6 +130,7 @@ async def handle_generation(websocket: WebSocket) -> None:
         except Exception:
             pass
     finally:
+        cancel_event.set()  # stop the generator thread if still running
         try:
             await websocket.close()
         except Exception:
