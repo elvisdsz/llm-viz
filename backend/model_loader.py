@@ -6,6 +6,8 @@ Usage:
     model, tokenizer = get_model_and_tokenizer()
 """
 
+import threading
+
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
@@ -13,19 +15,22 @@ from backend.config import MODEL_NAME
 
 _model: GPT2LMHeadModel | None = None
 _tokenizer: GPT2Tokenizer | None = None
+_lock = threading.Lock()
 
 
 def get_model_and_tokenizer() -> tuple[GPT2LMHeadModel, GPT2Tokenizer]:
     global _model, _tokenizer
     if _model is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"Loading {MODEL_NAME} on {device}...")
+        with _lock:
+            if _model is None:  # double-checked locking
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+                print(f"Loading {MODEL_NAME} on {device}...")
 
-        _tokenizer = GPT2Tokenizer.from_pretrained(MODEL_NAME)
-        _model = GPT2LMHeadModel.from_pretrained(MODEL_NAME)
-        _model.to(device)
-        _model.eval()
+                _tokenizer = GPT2Tokenizer.from_pretrained(MODEL_NAME)
+                _model = GPT2LMHeadModel.from_pretrained(MODEL_NAME)
+                _model.to(device)
+                _model.eval()
 
-        print("Model loaded.")
+                print("Model loaded.")
 
     return _model, _tokenizer
