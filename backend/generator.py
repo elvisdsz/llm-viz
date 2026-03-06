@@ -72,11 +72,14 @@ def generate_tokens(
             # outputs.logits: (1, seq_len, vocab_size)
             logits = outputs.logits[0, -1, :]  # last position
 
-            # Temperature sampling
-            if temperature != 1.0:
-                logits = logits / temperature
-            probs = torch.softmax(logits, dim=-1)
-            next_token_id = torch.multinomial(probs, num_samples=1)
+            # Temperature sampling (temperature=0 → greedy argmax)
+            if temperature == 0.0:
+                next_token_id = torch.argmax(logits, keepdim=True)
+            else:
+                if temperature != 1.0:
+                    logits = logits / temperature
+                probs = torch.softmax(logits, dim=-1)
+                next_token_id = torch.multinomial(probs, num_samples=1)
 
             token_str = tokenizer.decode(next_token_id)
 

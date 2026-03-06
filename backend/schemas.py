@@ -7,7 +7,7 @@ All messages serialise to JSON via .model_dump_json().
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # ── Inbound (client → server) ────────────────────────────────────────────────
@@ -16,7 +16,7 @@ class GenerateRequest(BaseModel):
     type: str = "generate"
     prompt: str
     max_new_tokens: int = 50
-    temperature: float = 1.0
+    temperature: float = Field(default=1.0, ge=0)
 
 
 # ── Outbound (server → client) ───────────────────────────────────────────────
