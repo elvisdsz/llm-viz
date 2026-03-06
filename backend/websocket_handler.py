@@ -47,7 +47,7 @@ async def handle_generation(websocket: WebSocket) -> None:
         await websocket.close()
         return
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     total = 0
 
     try:
