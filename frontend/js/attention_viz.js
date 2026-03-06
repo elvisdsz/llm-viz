@@ -40,6 +40,7 @@ export class AttentionViz {
 
     this.currentLayer = 0;
     this.currentHead  = 0;
+    this.latestIndex  = -1;
 
     this._setupDropdownListeners();
     this._setupTooltip();
@@ -63,6 +64,7 @@ export class AttentionViz {
    */
   update(data) {
     this.history.set(data.token_index, data);
+    this.latestIndex = data.token_index;
     this._render(data);
   }
 
@@ -78,6 +80,7 @@ export class AttentionViz {
   /** Clear canvas and history. */
   reset() {
     this.history.clear();
+    this.latestIndex = -1;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -150,9 +153,7 @@ export class AttentionViz {
   }
 
   _getLatestData() {
-    if (this.history.size === 0) return null;
-    const maxIdx = Math.max(...this.history.keys());
-    return this.history.get(maxIdx) ?? null;
+    return this.latestIndex >= 0 ? (this.history.get(this.latestIndex) ?? null) : null;
   }
 
   _setupTooltip() {

@@ -31,6 +31,7 @@ export class ActivationViz {
     this.history = new Map();
 
     this.currentLayer = 0;
+    this.latestIndex  = -1;
 
     this.layerSelect.addEventListener("change", () => {
       this.currentLayer = parseInt(this.layerSelect.value, 10);
@@ -56,6 +57,7 @@ export class ActivationViz {
    */
   update(data) {
     this.history.set(data.token_index, data);
+    this.latestIndex = data.token_index;
     this._render(data);
   }
 
@@ -68,6 +70,7 @@ export class ActivationViz {
   /** Clear canvas + history. */
   reset() {
     this.history.clear();
+    this.latestIndex = -1;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -116,8 +119,6 @@ export class ActivationViz {
   }
 
   _getLatestData() {
-    if (this.history.size === 0) return null;
-    const maxIdx = Math.max(...this.history.keys());
-    return this.history.get(maxIdx) ?? null;
+    return this.latestIndex >= 0 ? (this.history.get(this.latestIndex) ?? null) : null;
   }
 }
