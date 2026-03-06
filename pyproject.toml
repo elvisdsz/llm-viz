@@ -1,0 +1,12 @@
+[project]
+name = "llm-viz"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.135.1",
+    "numpy>=2.4.2",
+    "pydantic>=2.12.5",
+    "transformers>=5.3.0",
+]

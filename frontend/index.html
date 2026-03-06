@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Visualizer</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header>
+    <h1>LLM Visualizer <span class="model-tag">GPT-2 Small</span></h1>
+  </header>
+
+  <!-- ── Controls ────────────────────────────────────────────────── -->
+  <section class="controls">
+    <textarea id="prompt-input" rows="3" placeholder="Enter your prompt…">The capital of France is</textarea>
+
+    <div class="control-row">
+      <label>Max tokens
+        <input id="max-tokens" type="number" value="40" min="1" max="200" />
+      </label>
+      <label>Temperature
+        <input id="temperature" type="number" value="1.0" min="0.1" max="2.0" step="0.1" />
+      </label>
+      <button id="generate-btn" class="primary">Generate</button>
+      <button id="stop-btn" disabled>Stop</button>
+    </div>
+
+    <div id="status-bar" class="status">Ready.</div>
+  </section>
+
+  <!-- ── Token stream ─────────────────────────────────────────────── -->
+  <section class="panel">
+    <h2>Token Stream</h2>
+    <div id="token-stream"></div>
+  </section>
+
+  <!-- ── Visualizations ──────────────────────────────────────────── -->
+  <div class="viz-grid">
+
+    <!-- Attention heatmap -->
+    <section class="panel">
+      <h2>Attention Heatmap</h2>
+      <div class="viz-controls">
+        <label>Layer
+          <select id="attn-layer-select"></select>
+        </label>
+        <label>Head
+          <select id="attn-head-select"></select>
+        </label>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="attention-canvas"></canvas>
+        <div id="attn-tooltip" class="tooltip hidden"></div>
+      </div>
+      <p class="hint">
+        Rows = query tokens (last generated token at bottom),
+        Cols = key tokens. Brighter = more attention.
+      </p>
+    </section>
+
+    <!-- Activation bar chart -->
+    <section class="panel">
+      <h2>Neuron Activations</h2>
+      <div class="viz-controls">
+        <label>Layer
+          <select id="act-layer-select"></select>
+        </label>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="activation-canvas"></canvas>
+      </div>
+      <p class="hint">
+        Top-20 neurons by |activation| for the last generated token.
+        Blue = positive, red = negative.
+      </p>
+    </section>
+
+  </div>
+
+  <!-- ── Scripts ─────────────────────────────────────────────────── -->
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
