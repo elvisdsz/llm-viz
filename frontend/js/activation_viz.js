@@ -86,10 +86,14 @@ export class ActivationViz {
     const totalH  = n * (BAR_H + BAR_GAP) + 12;
     const totalW  = LABEL_W + MAX_BAR_W + VALUE_W + 16;
 
-    this.canvas.width  = totalW;
-    this.canvas.height = totalH;
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width  = totalW * dpr;
+    this.canvas.height = totalH * dpr;
+    this.canvas.style.width  = totalW + "px";
+    this.canvas.style.height = totalH + "px";
 
     const ctx = this.ctx;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, totalW, totalH);
 
     // Find max |value| for scale

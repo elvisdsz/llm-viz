@@ -106,10 +106,14 @@ export class AttentionViz {
     const totalW = LABEL_W + seqLen * CELL_SIZE;
     const totalH = LABEL_H + 1 * CELL_SIZE;   // one query row
 
-    this.canvas.width  = totalW;
-    this.canvas.height = totalH;
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width  = totalW * dpr;
+    this.canvas.height = totalH * dpr;
+    this.canvas.style.width  = totalW + "px";
+    this.canvas.style.height = totalH + "px";
 
     const ctx = this.ctx;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, totalW, totalH);
 
     // Draw column labels (key positions)
