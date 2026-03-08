@@ -71,9 +71,10 @@ def extract_activations(
         # hs: (batch=1, seq_len, hidden_size)
         vec = hs[0, last_pos, :].detach().cpu().float().numpy()  # (hidden_size,)
 
-        # Top-N indices by absolute value
+        # Top-N indices by absolute value (clamped so top_n never exceeds vector length)
         abs_vec = np.abs(vec)
-        top_indices = np.argpartition(abs_vec, -top_n)[-top_n:]
+        n = min(top_n, len(vec))
+        top_indices = np.argpartition(abs_vec, -n)[-n:]
         top_indices = top_indices[np.argsort(abs_vec[top_indices])[::-1]]
 
         layer_neurons: list[tuple[int, float]] = [
