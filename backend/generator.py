@@ -106,7 +106,7 @@ def generate_tokens(
                 attention_weights=attn_weights,
                 attention_keys=attn_keys,
                 activations=act_data,
-                layer_count=len(outputs.hidden_states),
+                layer_count=len(outputs.hidden_states),  # layer 0 = embedding, 1–12 = transformer blocks
                 hidden_size=HIDDEN_SIZE,
             )
             yield step
