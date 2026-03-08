@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 class GenerateRequest(BaseModel):
     type: str = "generate"
-    prompt: str
+    prompt: str = Field(..., min_length=1)
     max_new_tokens: int = 50
     temperature: float = Field(default=1.0, ge=0)
 
